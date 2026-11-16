@@ -1,9 +1,12 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { AdminHeader, Table } from "@/components/admin/admin-ui";
 
 export const metadata = { title: "Audit log" };
 
 export default async function AdminAudit() {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const supabase = await createClient();
   const { data: logs } = await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(200);
   const actorIds = [...new Set((logs ?? []).map((l) => l.actor_id).filter((x): x is string => !!x))];

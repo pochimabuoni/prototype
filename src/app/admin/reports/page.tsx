@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -11,6 +12,8 @@ import { cn } from "@/lib/utils";
 export const metadata = { title: "Reports" };
 
 export default async function AdminReports({ searchParams }: PageProps<"/admin/reports">) {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const sp = await searchParams;
   const showClosed = sp.view === "closed";
   const supabase = await createClient();

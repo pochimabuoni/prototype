@@ -24,10 +24,10 @@ export function AvailabilityGrid({
   };
   return (
     <div role="group" aria-label="Weekly availability" aria-describedby={describedBy} className={cn("overflow-x-auto", invalid && "outline outline-1 outline-destructive")}>
-      <table className="w-full min-w-[20rem] border-collapse text-center">
+      <table className="w-full min-w-[20rem] table-fixed border-collapse text-center">
         <thead>
           <tr>
-            <th className="w-24" />
+            <th className="w-24 sm:w-28" />
             {DAY_SHORT.map((d) => (
               <th key={d} scope="col" className="pb-2 text-[0.625rem] font-medium uppercase tracking-[0.14em] text-stone">
                 {d}

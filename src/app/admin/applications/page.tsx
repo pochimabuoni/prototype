@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AdminHeader, Table, statusVariant } from "@/components/admin/admin-ui";
@@ -11,6 +12,8 @@ export const metadata = { title: "Applications" };
 const STATUSES = ["PENDING", "WAITLISTED", "APPROVED", "REJECTED"] as const;
 
 export default async function AdminApplications({ searchParams }: PageProps<"/admin/applications">) {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const sp = await searchParams;
   const status = STATUSES.find((s) => s === sp.status) ?? "PENDING";
   const supabase = await createClient();

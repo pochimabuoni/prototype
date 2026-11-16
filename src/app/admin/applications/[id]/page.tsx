@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -13,6 +14,8 @@ import { DecisionForm } from "@/components/admin/decision-form";
 export const metadata = { title: "Application" };
 
 export default async function AdminApplication({ params }: PageProps<"/admin/applications/[id]">) {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const { id } = await params;
   if (!uuidSchema.safeParse(id).success) notFound();
   const supabase = await createClient();

@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { AdminHeader } from "@/components/admin/admin-ui";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +7,8 @@ import { SportForm, SportToggle } from "@/components/admin/sport-form";
 export const metadata = { title: "Sports" };
 
 export default async function AdminSports() {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const supabase = await createClient();
   const { data: sports } = await supabase.from("sports").select("id, name, slug, skill_levels, formats, sort_order, is_active").order("sort_order").order("name");
   return (

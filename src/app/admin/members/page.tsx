@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AdminHeader, Table } from "@/components/admin/admin-ui";
@@ -11,6 +12,8 @@ import { displayName } from "@/lib/data/members";
 export const metadata = { title: "Members" };
 
 export default async function AdminMembers({ searchParams }: PageProps<"/admin/members">) {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim().toLowerCase().slice(0, 100) : "";
   const supabase = await createClient();

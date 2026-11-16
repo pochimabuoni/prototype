@@ -93,7 +93,7 @@ export function ProfileForm({
                   const file = e.target.files?.[0] ?? null;
                   setPhotoError(null);
                   if (!file) return;
-                  if (file.size > MAX_IMAGE_BYTES) return setPhotoError("Photos must be 5 MB or smaller.");
+                  if (file.size > MAX_IMAGE_BYTES) return setPhotoError("Photos must be 4 MB or smaller.");
                   if (!(IMAGE_TYPES as readonly string[]).includes(file.type)) return setPhotoError("Please choose a JPEG, PNG or WebP image.");
                   setPhoto(file);
                   setPreview(URL.createObjectURL(file));

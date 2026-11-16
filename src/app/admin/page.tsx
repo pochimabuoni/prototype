@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AdminHeader, Metric } from "@/components/admin/admin-ui";
@@ -6,6 +7,8 @@ import { daysAgoIso } from "@/lib/domain/format";
 export const metadata = { title: "Overview" };
 
 export default async function AdminOverview() {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const supabase = await createClient();
   const since30 = daysAgoIso(30);
   const since7 = daysAgoIso(7);

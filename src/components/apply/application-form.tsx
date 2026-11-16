@@ -167,7 +167,7 @@ export function ApplicationForm({ sports, defaultEmail }: { sports: SportOption[
 
       <Fieldset number="05" title="Finishing touches">
         <div className="grid gap-8 sm:grid-cols-2">
-          <FormField id="photo" label="Profile photograph" error={photoError ?? undefined} hint="Optional. JPEG, PNG or WebP, up to 5 MB. Seen only by our team.">
+          <FormField id="photo" label="Profile photograph" error={photoError ?? undefined} hint="Optional. JPEG, PNG or WebP, up to 4 MB. Seen only by our team.">
             <Input
               id="photo"
               type="file"
@@ -176,7 +176,7 @@ export function ApplicationForm({ sports, defaultEmail }: { sports: SportOption[
               onChange={(e) => {
                 const file = e.target.files?.[0] ?? null;
                 setPhotoError(null);
-                if (file && file.size > MAX_IMAGE_BYTES) setPhotoError("Photos must be 5 MB or smaller.");
+                if (file && file.size > MAX_IMAGE_BYTES) setPhotoError("Photos must be 4 MB or smaller.");
                 else if (file && !(IMAGE_TYPES as readonly string[]).includes(file.type)) setPhotoError("Please choose a JPEG, PNG or WebP image.");
                 setPhoto(file);
               }}

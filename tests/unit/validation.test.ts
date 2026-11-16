@@ -73,7 +73,7 @@ describe("validateImageFile", () => {
   it("rejects spoofed content types and oversize files", async () => {
     expect((await validateImageFile(file([0x3c, 0x73, 0x76, 0x67, 0, 0, 0, 0, 0, 0, 0, 0], "image/png"))).ok).toBe(false);
     expect((await validateImageFile(file([0xff, 0xd8, 0xff], "image/svg+xml"))).ok).toBe(false);
-    const big = new File([new Uint8Array(5 * 1024 * 1024 + 1)], "big", { type: "image/jpeg" });
+    const big = new File([new Uint8Array(4 * 1024 * 1024 + 1)], "big", { type: "image/jpeg" });
     expect((await validateImageFile(big)).ok).toBe(false);
   });
 });

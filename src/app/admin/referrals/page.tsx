@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { AdminHeader, Table } from "@/components/admin/admin-ui";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +7,8 @@ import { ReferralForm, ReferralToggle } from "@/components/admin/referral-admin"
 export const metadata = { title: "Referral codes" };
 
 export default async function AdminReferrals() {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const supabase = await createClient();
   const { data: codes } = await supabase.from("referral_codes").select("*").order("created_at", { ascending: false });
   return (

@@ -36,12 +36,12 @@ export const dateOfBirthSchema = z
   .refine((v) => ageOn(v) <= 110, "Please enter a valid date of birth.");
 
 export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 /** Validate an uploaded image by declared type, size AND magic bytes. */
 export async function validateImageFile(file: File): Promise<{ ok: true; ext: "jpg" | "png" | "webp" } | { ok: false; error: string }> {
   if (file.size === 0) return { ok: false, error: "The selected file is empty." };
-  if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: "Photos must be 5 MB or smaller." };
+  if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: "Photos must be 4 MB or smaller." };
   if (!(IMAGE_TYPES as readonly string[]).includes(file.type)) return { ok: false, error: "Please upload a JPEG, PNG or WebP image." };
   const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
   const isJpeg = head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff;

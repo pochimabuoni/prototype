@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { getMatchingWeights } from "@/lib/data/members";
 import { AdminHeader } from "@/components/admin/admin-ui";
@@ -6,6 +7,8 @@ import { WeightsForm } from "@/components/admin/weights-form";
 export const metadata = { title: "Matching" };
 
 export default async function AdminSettings() {
+  // Re-check per page (layouts and pages render concurrently).
+  await requireAdmin();
   const supabase = await createClient();
   const weights = await getMatchingWeights(supabase);
   return (
