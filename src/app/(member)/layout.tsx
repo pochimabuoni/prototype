@@ -1,6 +1,8 @@
 import { requireCommunityAccess } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { AppHeader, SimpleFooter } from "@/components/app/app-header";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { touchLastActive } from "@/lib/audit";
 
 /**
  * Private community area. Access is decided SERVER-SIDE from database state
@@ -10,10 +12,12 @@ export default async function MemberLayout({ children }: LayoutProps<"/">) {
   const viewer = await requireCommunityAccess();
   const supabase = await createClient();
   const [{ data: unread }, { count: pendingInvites }, { count: pendingConnections }] = await Promise.all([
+    // (activity stamp runs alongside; failures are non-fatal)
     supabase.rpc("my_unread_counts"),
     supabase.from("invitations").select("id", { count: "exact", head: true }).eq("recipient_id", viewer.id).eq("status", "PENDING"),
     supabase.from("connections").select("id", { count: "exact", head: true }).eq("addressee_id", viewer.id).eq("status", "PENDING"),
   ]);
+  await touchLastActive(createAdminClient(), viewer.id).catch(() => undefined);
   const unreadTotal = (unread ?? []).reduce((s, r) => s + Number(r.unread), 0);
   return (
     <>

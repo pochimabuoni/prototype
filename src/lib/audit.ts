@@ -19,3 +19,13 @@ export async function logAdminAction(
     throw new Error("Could not record audit log entry.");
   }
 }
+
+/** Throttled "last seen" stamp used for the admin activity metric. */
+export async function touchLastActive(admin: AdminSupabase, userId: string) {
+  const hourAgo = new Date(Date.now() - 3_600_000).toISOString();
+  await admin
+    .from("users")
+    .update({ last_active_at: new Date().toISOString() })
+    .eq("id", userId)
+    .or(`last_active_at.is.null,last_active_at.lt.${hourAgo}`);
+}

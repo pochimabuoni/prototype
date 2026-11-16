@@ -9,8 +9,10 @@ import { publicEnv } from "@/lib/env";
  * Every query is subject to Row Level Security.
  */
 export async function createClient() {
-  const env = publicEnv();
+  // Read cookies first: this marks the route as dynamic (per-request) even
+  // when configuration is missing at build time.
   const cookieStore = await cookies();
+  const env = publicEnv();
   return createServerClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {

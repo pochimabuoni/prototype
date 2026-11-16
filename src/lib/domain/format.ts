@@ -30,3 +30,8 @@ export function formatMessageTime(iso: string): string {
 export function todayInNewYork(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date());
 }
+
+/** ISO timestamp n days before now (server-side reporting windows). */
+export function daysAgoIso(days: number): string {
+  return new Date(Date.now() - days * 86_400_000).toISOString();
+}
