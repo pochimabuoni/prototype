@@ -486,7 +486,20 @@ as $$
           and p.completed_at is not null
           and (
             p.visibility = 'MEMBERS'
-            or (p.visibility = 'CONNECTIONS' and public.are_connected(viewer, target))
+            -- Existing relationships survive narrower visibility settings, so
+            -- members can still see who they're connected to or dealing with.
+            or exists (
+              select 1 from public.connections c
+              where c.status in ('PENDING', 'ACCEPTED')
+                and ((c.requester_id = viewer and c.addressee_id = target)
+                  or (c.requester_id = target and c.addressee_id = viewer))
+            )
+            or exists (
+              select 1 from public.invitations i
+              where i.status in ('PENDING', 'ACCEPTED')
+                and ((i.sender_id = viewer and i.recipient_id = target)
+                  or (i.sender_id = target and i.recipient_id = viewer))
+            )
           )
       )
     );
