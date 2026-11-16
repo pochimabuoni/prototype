@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { playStyleLabel } from "@/lib/domain/play-styles";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireCommunityAccess } from "@/lib/auth/viewer";
@@ -44,8 +45,12 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/m
             <Avatar src={member.photoUrl} name={member.displayName} size={112} />
             <div>
               <h1 className="display text-5xl">{member.displayName}</h1>
-              <p className="mt-2 text-xs uppercase tracking-[0.16em] text-stone">{member.neighborhoodName}</p>
+              <p className="mt-2 text-xs uppercase tracking-[0.16em] text-stone">
+                {member.neighborhoodName}
+                {member.age ? ` · ${member.age}` : ""}
+              </p>
               {member.occupation ? <p className="mt-1 text-muted-foreground">{member.occupation}</p> : null}
+              <p className="mt-2 text-sm text-graphite">Enjoys {member.playStyles.map((p) => playStyleLabel(p).toLowerCase()).join(", ")} play</p>
             </div>
           </div>
           {member.bio ? <p className="mt-10 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-graphite">{member.bio}</p> : null}

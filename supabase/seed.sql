@@ -112,3 +112,122 @@ on conflict do nothing;
 insert into public.connections (requester_id, addressee_id, status, responded_at) values
   ('00000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000005', 'ACCEPTED', now())
 on conflict do nothing;
+
+-- Matchmaking preferences for demo members ------------------------------------
+-- Dates of birth normally come from the approved application (see the
+-- member_profiles_sync_birth_date trigger); demo members get them directly.
+insert into public.member_private (user_id, date_of_birth) values
+  ('00000000-0000-4000-8000-000000000001', '1986-02-20'),
+  ('00000000-0000-4000-8000-000000000002', '1991-04-12'),
+  ('00000000-0000-4000-8000-000000000003', '1988-11-30'),
+  ('00000000-0000-4000-8000-000000000004', '1990-06-08'),
+  ('00000000-0000-4000-8000-000000000005', '1993-01-17')
+on conflict (user_id) do nothing;
+
+update public.member_profiles set partner_age_min = 28, partner_age_max = 45, play_styles = array['one_on_one','small_group']
+  where user_id = '00000000-0000-4000-8000-000000000002';
+update public.member_profiles set play_styles = array['one_on_one','small_group','large_group']
+  where user_id = '00000000-0000-4000-8000-000000000003';
+update public.member_profiles set show_age = false, play_styles = array['small_group','large_group']
+  where user_id = '00000000-0000-4000-8000-000000000004';
+update public.member_profiles set play_styles = array['small_group']
+  where user_id = '00000000-0000-4000-8000-000000000005';
+
+-- Théo also plays Saturday mornings, so Giulia, Marcus and Théo can form a group.
+insert into public.member_availability (user_id, day_of_week, time_block) values
+  ('00000000-0000-4000-8000-000000000005', 5, 'MORNING')
+on conflict do nothing;
+
+-- Venue directory ---------------------------------------------------------------
+-- Real, publicly known places to play. Informational only: Pochi Ma Buoni does
+-- not own, operate or book any of them. VERIFY details (access, seasons,
+-- websites) before launch; operators change.
+insert into public.venues (slug, name, neighborhood, location, description, access, access_note, indoor, seasonal, website, sort_order) values
+  ('central-park-tennis-center', 'Central Park Tennis Center', 'upper-west-side', 'Central Park, mid-park near West 94th–96th Streets',
+   'Public clay and hard courts in the middle of Central Park, run by NYC Parks.', 'PERMIT_OR_RESERVATION',
+   'NYC Parks tennis permit or single-play ticket. Reserve through NYC Parks.', false, true, 'https://www.centralparknyc.org', 10),
+  ('riverside-park-clay-courts', 'Riverside Park Clay Courts', 'upper-west-side', 'Riverside Park at West 96th Street',
+   'Public clay courts beside the Hudson.', 'PERMIT_OR_RESERVATION', 'NYC Parks tennis permit required.', false, true, null, 20),
+  ('sportime-randalls-island', 'SPORTIME Randall''s Island', 'harlem', 'Randall''s Island Park, across the footbridge from East Harlem',
+   'Private racquet club with indoor and outdoor tennis courts and padel courts.', 'PAID_OR_MEMBERSHIP',
+   'Court fees or club membership. Book directly with the club.', true, false, 'https://www.sportimeny.com', 30),
+  ('reserve-padel-upper-east-side', 'Reserve Padel Upper East Side', 'upper-east-side', 'Upper East Side',
+   'Indoor padel club.', 'PAID_OR_MEMBERSHIP', 'Book and pay directly with the club.', true, false, null, 40),
+  ('citypickle-wollman-rink', 'CityPickle at Wollman Rink', 'midtown', 'Wollman Rink, Central Park, near East 59th Street & Fifth Avenue',
+   'Pickleball courts set up at Wollman Rink outside the skating season.', 'PAID_OR_MEMBERSHIP',
+   'Court booking fees. Seasonal.', false, true, null, 50),
+  ('carl-schurz-park', 'Carl Schurz Park', 'upper-east-side', 'East End Avenue at East 86th Street',
+   'Neighbourhood park with outdoor courts used for pickleball.', 'FREE_PUBLIC', 'First come, first served.', false, false, null, 60),
+  ('chelsea-piers-golf-club', 'Chelsea Piers Golf Club', 'chelsea', 'Pier 59, Hudson River Park at West 23rd Street',
+   'Multi-level, all-weather driving range on the Hudson.', 'PAID_OR_MEMBERSHIP', 'Pay per session.', false, false, 'https://www.chelseapiers.com', 70),
+  ('randalls-island-golf-center', 'Randall''s Island Golf Center', 'harlem', 'Randall''s Island Park',
+   'Driving range and practice facilities.', 'PAID_OR_MEMBERSHIP', 'Pay per session.', false, false, null, 80),
+  ('west-4th-street-courts', 'West 4th Street Courts', 'greenwich-village', 'Sixth Avenue at West 4th Street',
+   'The Cage: fenced outdoor courts known for fast, competitive pickup games.', 'FREE_PUBLIC', 'First come, first served.', false, false, null, 90),
+  ('holcombe-rucker-park', 'Holcombe Rucker Park', 'harlem', 'West 155th Street & Frederick Douglass Boulevard',
+   'Historic outdoor courts, home of storied summer leagues.', 'FREE_PUBLIC', 'First come, first served outside league events.', false, false, null, 100),
+  ('chelsea-waterside-park', 'Chelsea Waterside Park', 'chelsea', 'Eleventh Avenue at West 22nd Street',
+   'Hudson River Park space with a turf field and outdoor basketball courts.', 'FREE_PUBLIC',
+   'Courts are first come, first served. Organised field use may need a permit.', false, false, 'https://hudsonriverpark.org', 110),
+  ('pier-40-fields', 'Pier 40 Fields', 'west-village', 'Pier 40, Hudson River Park at West Houston Street',
+   'Large turf fields used for leagues and organised play.', 'PERMIT_OR_RESERVATION',
+   'Field time is permitted through Hudson River Park.', false, false, 'https://hudsonriverpark.org', 120),
+  ('randalls-island-fields', 'Randall''s Island Park Fields', 'harlem', 'Randall''s Island Park',
+   'Dozens of grass and turf fields.', 'PERMIT_OR_RESERVATION', 'Field permits required for organised games.', false, false, null, 130),
+  ('central-park-reservoir', 'Central Park Reservoir Loop', 'upper-east-side', 'Engineers'' Gate, East 90th Street & Fifth Avenue',
+   'A 1.58-mile soft-surface loop around the Jacqueline Kennedy Onassis Reservoir.', 'FREE_PUBLIC', null, false, false, 'https://www.centralparknyc.org', 140),
+  ('central-park-drive', 'Central Park Drive', 'upper-west-side', 'The full loop of Central Park''s drives',
+   'A 6.1-mile car-free loop with rolling hills, popular for long runs and group rides.', 'FREE_PUBLIC', null, false, false, 'https://www.centralparknyc.org', 150),
+  ('hudson-river-greenway', 'Hudson River Greenway', 'tribeca', 'Along the Hudson on Manhattan''s west side',
+   'Waterfront path running most of the length of Manhattan.', 'FREE_PUBLIC', null, false, false, null, 160),
+  ('east-river-esplanade', 'East River Esplanade', 'upper-east-side', 'Along the East River, Upper East Side to East Harlem',
+   'Riverside path for easy runs.', 'FREE_PUBLIC', null, false, false, null, 170),
+  ('asphalt-green-upper-east-side', 'Asphalt Green Upper East Side', 'upper-east-side', 'York Avenue at East 90th Street',
+   'Nonprofit sports centre with an Olympic-size indoor pool.', 'PAID_OR_MEMBERSHIP', 'Membership or day pass.', true, false, 'https://www.asphaltgreen.org', 180),
+  ('hamilton-fish-park-pool', 'Hamilton Fish Park Pool', 'lower-east-side', 'Pitt Street at East Houston Street',
+   'Large outdoor public pool.', 'FREE_PUBLIC', 'Free in the summer season. Follow NYC Parks pool rules.', false, true, null, 190),
+  ('tony-dapolito-recreation-center', 'Tony Dapolito Recreation Center', 'west-village', 'Clarkson Street at Seventh Avenue South',
+   'NYC Parks recreation centre with indoor and outdoor pools.', 'PAID_OR_MEMBERSHIP', 'NYC Parks recreation centre membership.', true, false, null, 200),
+  ('pier-25-volleyball', 'Pier 25 Sand Volleyball Courts', 'tribeca', 'Pier 25, Hudson River Park at North Moore Street',
+   'Sand courts on the river used for leagues and open play.', 'PERMIT_OR_RESERVATION',
+   'Leagues have priority. Open play when courts are free.', false, true, 'https://hudsonriverpark.org', 210),
+  ('printing-house', 'Printing House', 'west-village', 'Hudson Street, West Village',
+   'Private gym and squash club.', 'PAID_OR_MEMBERSHIP', 'Membership club.', true, false, null, 220),
+  ('cityview-racquet-club', 'CityView Racquet Club', 'long-island-city', 'Long Island City, Queens',
+   'Large squash club across the river from Midtown.', 'PAID_OR_MEMBERSHIP', 'Membership or court fees.', true, false, null, 230)
+on conflict (slug) do nothing;
+
+insert into public.venue_sports (venue_id, sport_id, note)
+select v.id, s.id, x.note
+from (values
+  ('central-park-tennis-center', 'tennis', 'Clay and hard courts'),
+  ('riverside-park-clay-courts', 'tennis', 'Clay courts'),
+  ('sportime-randalls-island', 'tennis', 'Indoor and outdoor courts'),
+  ('sportime-randalls-island', 'padel', null),
+  ('reserve-padel-upper-east-side', 'padel', null),
+  ('citypickle-wollman-rink', 'pickleball', 'Seasonal'),
+  ('carl-schurz-park', 'pickleball', null),
+  ('chelsea-piers-golf-club', 'golf', 'Driving range'),
+  ('randalls-island-golf-center', 'golf', 'Driving range'),
+  ('west-4th-street-courts', 'basketball', 'Pickup games'),
+  ('holcombe-rucker-park', 'basketball', null),
+  ('chelsea-waterside-park', 'basketball', null),
+  ('chelsea-waterside-park', 'soccer', 'Turf field'),
+  ('pier-40-fields', 'soccer', 'Turf fields'),
+  ('randalls-island-fields', 'soccer', null),
+  ('central-park-reservoir', 'running', '1.58-mile loop'),
+  ('central-park-drive', 'running', '6.1-mile loop'),
+  ('central-park-drive', 'cycling', 'Park loops'),
+  ('hudson-river-greenway', 'running', null),
+  ('hudson-river-greenway', 'cycling', 'Long, flat road rides'),
+  ('east-river-esplanade', 'running', null),
+  ('asphalt-green-upper-east-side', 'swimming', 'Olympic-size indoor pool'),
+  ('hamilton-fish-park-pool', 'swimming', 'Outdoor, summer only'),
+  ('tony-dapolito-recreation-center', 'swimming', 'Indoor and outdoor pools'),
+  ('pier-25-volleyball', 'volleyball', 'Beach 2s and 4s'),
+  ('printing-house', 'squash', null),
+  ('cityview-racquet-club', 'squash', null)
+) as x(venue, sport, note)
+join public.venues v on v.slug = x.venue
+join public.sports s on s.slug = x.sport
+on conflict do nothing;

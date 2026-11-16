@@ -13,6 +13,7 @@ export function AppNav({ isAdmin, unread, pendingInvites }: { isAdmin: boolean; 
   const items = [
     { href: "/home", label: "Home" },
     { href: "/discover", label: "Discover" },
+    { href: "/venues", label: "Venues" },
     { href: "/connections", label: "Connections" },
     { href: "/invitations", label: "Invitations", count: pendingInvites },
     { href: "/messages", label: "Messages", count: unread },

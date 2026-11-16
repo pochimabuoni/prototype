@@ -18,7 +18,10 @@ export function MemberCard({ member, connection }: { member: MemberMatch; connec
               {member.displayName}
             </Link>
           </h3>
-          <p className="mt-1 text-[0.6875rem] uppercase tracking-[0.16em] text-stone">{member.neighborhoodName}</p>
+          <p className="mt-1 text-[0.6875rem] uppercase tracking-[0.16em] text-stone">
+            {member.neighborhoodName}
+            {member.age ? ` · ${member.age}` : ""}
+          </p>
           {member.occupation ? <p className="mt-1 truncate text-sm text-muted-foreground">{member.occupation}</p> : null}
         </div>
         {m ? (

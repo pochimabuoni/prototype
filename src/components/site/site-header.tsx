@@ -6,6 +6,7 @@ import { MobileNav } from "./mobile-nav";
 export const PUBLIC_NAV = [
   { href: "/philosophy", label: "Philosophy" },
   { href: "/how-it-works", label: "How it works" },
+  { href: "/venues", label: "Venues" },
   { href: "/membership", label: "Membership" },
   { href: "/contact", label: "Contact" },
 ] as const;

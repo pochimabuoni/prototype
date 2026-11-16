@@ -13,9 +13,32 @@ const STEPS = [
   { title: "Apply", body: "Share the sports you play and at what level, the neighbourhood you're based in, the hours you're usually free, and a little about yourself." },
   { title: "Admission", body: "Our team reviews each application personally. Approved applicants receive an email invitation; others may be placed on the waitlist as the community grows." },
   { title: "Activate", body: "Sign in with your email, activate the $60 monthly membership through secure Stripe checkout, and complete your member profile." },
-  { title: "Discover", body: "Browse members suggested for each of your sports. Every suggestion shows a compatibility score and the plain-language reasons behind it." },
+  { title: "Discover", body: "Find a partner for one-on-one play, or let us build a whole group: a doubles four, a foursome, a pickup game. Every suggestion shows a compatibility score and the plain-language reasons behind it." },
   { title: "Connect", body: "Send a short request to connect. Once accepted, you can message privately within Pochi Ma Buoni — no phone numbers needed." },
-  { title: "Play", body: "Invite a member to play: propose a sport, date, time and a general venue. You make the booking yourselves wherever you prefer to play." },
+  { title: "Play", body: "Invite one member or a whole group: propose a sport, date, time and a venue from our guide or anywhere you like. You make any booking yourselves." },
+];
+
+const MATCH_MODES = [
+  {
+    kicker: "One-on-one",
+    title: "Find a partner",
+    body: "Singles, a hitting session, a long run together. We rank members who share your sport by availability, level, neighbourhood and format.",
+  },
+  {
+    kicker: "Small and larger groups",
+    title: "Build a group",
+    body: "Choose a sport and a group size, from three to ten. We suggest a full group where everyone is free at the same time and suits one another, not only you. Invite them all in one step.",
+  },
+  {
+    kicker: "Your preferences",
+    title: "Age range",
+    body: "Optionally set the age range of the people you'd like to play with. Suggestions respect both your range and theirs. Your date of birth is never shown, and you can hide your age.",
+  },
+  {
+    kicker: "Your preferences",
+    title: "How you like to play",
+    body: "Tell us whether you enjoy one-on-one play, small groups, larger groups, or all three. You'll only be suggested for the kinds of games you've opted into.",
+  },
 ];
 
 export default function HowItWorksPage() {
@@ -36,6 +59,26 @@ export default function HowItWorksPage() {
             </li>
           ))}
         </ol>
+      </section>
+      <section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8">
+        <div className="grid gap-12 border-t border-border pt-16 lg:grid-cols-[22rem_1fr]">
+          <div>
+            <p className="eyebrow">Ways to match</p>
+            <h2 className="display mt-6 text-4xl">One partner, or the whole game.</h2>
+            <p className="mt-6 leading-relaxed text-muted-foreground">
+              You decide how you like to play and who you would like to meet. Every preference is yours to set and change at any time.
+            </p>
+          </div>
+          <ul className="grid gap-px border border-border bg-border sm:grid-cols-2">
+            {MATCH_MODES.map((m) => (
+              <li key={m.title} className="flex flex-col gap-3 bg-paper p-8">
+                <p className="text-[0.6875rem] uppercase tracking-[0.16em] text-steel">{m.kicker}</p>
+                <h3 className="font-serif text-2xl">{m.title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">{m.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
       <section className="border-y border-border bg-ivory">
         <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-2">

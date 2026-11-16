@@ -30,6 +30,10 @@ export async function loadProfileFormValues(supabase: ServerSupabase, userId: st
       occupation: profile.occupation ?? "",
       showOccupation: profile.show_occupation,
       visibility: profile.visibility,
+      showAge: profile.show_age,
+      partnerAgeMin: profile.partner_age_min,
+      partnerAgeMax: profile.partner_age_max,
+      playStyles: profile.play_styles as ProfileInput["playStyles"],
       sports: (sports ?? []).map((s) => ({ sport: slugById.get(s.sport_id) ?? "", level: s.skill_level, formats: s.formats })),
       availability: (availability ?? []).map((a) => slotKey(a.day_of_week, a.time_block)),
     };
@@ -48,6 +52,10 @@ export async function loadProfileFormValues(supabase: ServerSupabase, userId: st
     occupation: app?.occupation ?? "",
     showOccupation: true,
     visibility: "MEMBERS",
+    showAge: true,
+    partnerAgeMin: null,
+    partnerAgeMax: null,
+    playStyles: ["one_on_one", "small_group"],
     sports: appSports.map((s) => ({ sport: s.sport, level: s.level, formats: [] })),
     availability: appAvailability,
   };

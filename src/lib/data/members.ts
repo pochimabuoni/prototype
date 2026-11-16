@@ -6,6 +6,8 @@ import { rankMatches, scoreMatch, type MatchProfile, type MatchResult, type Matc
 import { parseStoredWeights } from "@/lib/matching/weights";
 import { signAvatarUrls } from "@/lib/storage";
 import { getNeighborhood, neighborhoodName } from "@/lib/domain/neighborhoods";
+import { styleForGroupSize, type PlayStyle } from "@/lib/domain/play-styles";
+import { buildGroups, type GroupSuggestion } from "@/lib/matching/group";
 
 export type ProfileRow = Tables<"member_profiles">;
 
@@ -22,6 +24,11 @@ export interface MemberSummary {
   discoverable: boolean;
   sports: { sportId: string; name: string; level: string; formats: string[] }[];
   availability: string[];
+  /** Null when the member hides their age. */
+  age: number | null;
+  playStyles: PlayStyle[];
+  /** Two-way age-preference compatibility with the viewer (computed in the database). */
+  ageFit: { iAccept: boolean; theyAccept: boolean };
 }
 
 export interface MemberMatch extends MemberSummary {
@@ -49,7 +56,7 @@ export async function loadMembers(
 ): Promise<{ summaries: Map<string, MemberSummary>; profiles: Map<string, MatchProfile> }> {
   let profileQuery = supabase
     .from("member_profiles")
-    .select("user_id, first_name, last_name, show_last_name, bio, neighborhood, occupation, show_occupation, photo_path, visibility")
+    .select("user_id, first_name, last_name, show_last_name, bio, neighborhood, occupation, show_occupation, photo_path, visibility, play_styles")
     .not("completed_at", "is", null)
     .limit(opts.limit ?? 500);
   if (opts.userIds) {
@@ -61,12 +68,14 @@ export async function loadMembers(
   const ids = profiles.map((p) => p.user_id);
   if (ids.length === 0) return { summaries: new Map(), profiles: new Map() };
 
-  const [{ data: sportsRows }, { data: availRows }, { data: catalogue }, urls] = await Promise.all([
+  const [{ data: sportsRows }, { data: availRows }, { data: catalogue }, urls, { data: ageRows }] = await Promise.all([
     supabase.from("member_sports").select("user_id, sport_id, skill_level, formats").in("user_id", ids),
     supabase.from("member_availability").select("user_id, day_of_week, time_block").in("user_id", ids),
     supabase.from("sports").select("id, name, skill_levels"),
     signAvatarUrls(supabase, profiles.map((p) => p.photo_path)),
+    supabase.rpc("member_age_info", { p_ids: ids }),
   ]);
+  const ageById = new Map((ageRows ?? []).map((a) => [a.user_id, a]));
   const sportById = new Map((catalogue ?? []).map((s) => [s.id, s]));
 
   const summaries = new Map<string, MemberSummary>();
@@ -86,6 +95,9 @@ export async function loadMembers(
       discoverable: p.visibility === "MEMBERS",
       sports: sports.map((s) => ({ sportId: s.sport_id, name: sportById.get(s.sport_id)!.name, level: s.skill_level, formats: s.formats })),
       availability,
+      age: ageById.get(p.user_id)?.age ?? null,
+      playStyles: p.play_styles as PlayStyle[],
+      ageFit: { iAccept: ageById.get(p.user_id)?.i_accept ?? true, theyAccept: ageById.get(p.user_id)?.they_accept ?? true },
     });
     matchProfiles.set(p.user_id, {
       userId: p.user_id,
@@ -113,6 +125,17 @@ export interface DiscoverFilters {
   when?: "weekday-mornings" | "weekday-evenings" | "weekends" | "any";
   format?: string;
   level?: "similar" | "any";
+  /** "mine" applies the viewer's preferred age range; the other member's range always applies. */
+  age?: "mine" | "any";
+}
+
+/** Shared eligibility rules for every discovery mode. */
+function eligible(summary: MemberSummary | undefined, filters: Pick<DiscoverFilters, "age">, style: PlayStyle): boolean {
+  if (!summary?.discoverable) return false;
+  if (!summary.playStyles.includes(style)) return false;
+  if (!summary.ageFit.theyAccept) return false;
+  if (filters.age !== "any" && !summary.ageFit.iAccept) return false;
+  return true;
 }
 
 const WHEN_SLOTS: Record<string, (slot: string) => boolean> = {
@@ -129,7 +152,7 @@ export async function discoverMembers(supabase: ServerSupabase, viewerId: string
 
   const candidates = [...profiles.values()].filter((c) => {
     if (c.userId === viewerId) return false;
-    if (!summaries.get(c.userId)?.discoverable) return false;
+    if (!eligible(summaries.get(c.userId), filters, "one_on_one")) return false;
     if (filters.area) {
       const n = getNeighborhood(c.neighborhood);
       if (!n || (n.area !== filters.area && n.slug !== filters.area)) return false;
@@ -151,6 +174,29 @@ export async function discoverMembers(supabase: ServerSupabase, viewerId: string
     me,
     weights,
     results: ranked.slice(0, limit).map((match) => ({ ...summaries.get(match.userId)!, match })),
+  };
+}
+
+/**
+ * Group mode: suggest whole groups (organiser included) for one sport, where
+ * everyone shares a free slot and has opted into that group size.
+ */
+export async function discoverGroups(
+  supabase: ServerSupabase,
+  viewerId: string,
+  opts: { sportId: string; size: number; age?: DiscoverFilters["age"] },
+): Promise<{ groups: (GroupSuggestion & { members: MemberSummary[] })[]; poolSize: number }> {
+  const [{ summaries, profiles }, weights] = await Promise.all([loadMembers(supabase), getMatchingWeights(supabase)]);
+  const me = profiles.get(viewerId);
+  if (!me) return { groups: [], poolSize: 0 };
+  const style = styleForGroupSize(opts.size);
+  const pool = [...profiles.values()].filter(
+    (c) => c.userId !== viewerId && eligible(summaries.get(c.userId), opts, style) && c.sports.some((s) => s.sportId === opts.sportId),
+  );
+  const groups = buildGroups(me, pool, weights, { sportId: opts.sportId, size: opts.size, limit: 3 });
+  return {
+    poolSize: pool.length,
+    groups: groups.map((g) => ({ ...g, members: g.memberIds.map((id) => summaries.get(id)!).filter(Boolean) })),
   };
 }
 

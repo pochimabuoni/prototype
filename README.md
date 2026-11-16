@@ -156,7 +156,16 @@ APPLICANT ──apply──▶ PENDING ──admin──▶ APPROVED / WAITLISTE
 * Every match carries plain-language reasons ("Both play intermediate tennis", "Available on weekend mornings", "Both prefer Manhattan").
 * Location is matched at **neighbourhood → area → borough** granularity. Addresses are never collected.
 
-Demographic preference filters are intentionally **not** implemented. Whether and how to offer them lawfully is a legal and business decision (see "Open decisions").
+### Ways to match
+
+* **Find a partner (one-on-one):** the ranked list above. Members only appear if they have opted into one-on-one play.
+* **Build a group (3–10 players):** `src/lib/matching/group.ts`. For one sport and a group size, it adds members greedily by their *average* pairwise score with everyone already in the group, and requires a time slot that every member is free. Members only appear for group sizes they've opted into (small group 3–6, larger group 7+). "Invite this group" sends one invitation per member, linked by `invitations.group_id`. RLS checks every recipient, and if any one isn't available nothing is sent.
+* **Play styles:** `member_profiles.play_styles` holds `one_on_one`, `small_group` and `large_group`, chosen by the member.
+* **Age range (optional):** `partner_age_min` and `partner_age_max` on the profile. Matching is **two-way**: you only see members inside your range whose own range includes you. Dates of birth come from the approved application and live in `member_private`, which no member session can read. `member_age_info()` (SECURITY DEFINER) returns ages only for members who show them, plus the two compatibility booleans computed from real ages. Hiding your age doesn't get around anyone's preference. Age is the only demographic preference. Other protected characteristics are deliberately not collected or filterable. Have counsel confirm the approach before launch.
+
+### Venues
+
+A public, informational guide at `/venues` and `/venues/[sport]`, with an admin editor at **Admin → Venues**. It uses the `venues` and `venue_sports` tables (public read for active rows, admin-only writes), and invitation forms suggest venue names for the chosen sport. The seed lists 23 real, publicly known NYC places. **Verify each one before launch** (access, seasons, operators and websites change). Every venue page states that Pochi Ma Buoni does not own, operate, manage or book them.
 
 ---
 
@@ -194,10 +203,11 @@ Demographic preference filters are intentionally **not** implemented. Whether an
 ### What the tests cover
 * **Matching:** each component scorer, default weighting arithmetic, the shared-sport requirement, missing-data renormalization, configurable weights, ranking.
 * **Membership stages:** entitlement rules including the past-due grace window, suspension, applicants never reaching the community, open-redirect protection.
-* **Validation:** application and profile schemas, the age ≥ 18 rule, image signature checks.
+* **Validation:** application and profile schemas (including age-range and play-style preferences), group invitations, the age ≥ 18 rule, image signature checks.
+* **Group matchmaking:** shared-slot requirement, whole-group fit, determinism and de-duplication.
 * **Stripe webhook (integration):** real signature verification with the Stripe SDK, forged and tampered payloads rejected, idempotent replay handling, ledger release on failure so Stripe retries, checkout and failed-payment flows.
 * **Emails:** all templates render and escape user content.
-* **Database (55 checks):** anonymous, applicant, member and admin access; privilege escalation attempts; subscription self-grant attempts; visibility rules; blocking; messaging without a connection; forged senders; invitation transitions; age and skill constraints; referral codes; rate limiter; sign-up linking.
+* **Database (72 checks):** venue directory visibility and admin-only writes; dates of birth unreadable and unwritable by members; hidden ages; two-way age compatibility; birth date copied from the approved application; anonymous, applicant, member and admin access; privilege escalation attempts; subscription self-grant attempts; visibility rules; blocking; messaging without a connection; forged senders; invitation transitions; age and skill constraints; referral codes; rate limiter; sign-up linking.
 
 ---
 
@@ -221,7 +231,8 @@ The design calls for editorial photography. No photographs are bundled, because 
 ## Open decisions and remaining configuration
 
 * **Legal:** `/terms` and `/privacy` are **drafts clearly marked for attorney review**, with bracketed placeholders (entity name, governing law, refund policy, retention periods, liability language).
-* **Business:** refund policy, whether to run background or identity checks, and whether to offer any demographic preferences.
+* **Business:** refund policy and whether to run background or identity checks. Legal should confirm the age-range preference (see "Ways to match").
+* **Venues:** verify the seeded venue details before launch.
 * **Credentials:** Supabase project, Stripe account and price, Resend domain, production domain.
 * **Photography:** licensed editorial images.
 * **Contact address:** set `NEXT_PUBLIC_CONTACT_EMAIL` (defaults to a placeholder).

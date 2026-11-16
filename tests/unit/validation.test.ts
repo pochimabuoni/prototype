@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applicationSchema } from "@/lib/validation/application";
 import { ageOn, validateImageFile } from "@/lib/validation/common";
 import { profileSchema } from "@/lib/validation/profile";
+import { groupInvitationSchema } from "@/lib/validation/community";
 
 const valid = {
   fullName: "Giulia Ricci",
@@ -61,6 +62,41 @@ describe("profileSchema", () => {
     expect(ok.visibility).toBe("MEMBERS");
     expect(ok.sports[0]!.formats).toEqual([]);
     expect(profileSchema.safeParse({ firstName: "M", neighborhood: "tribeca", sports: [], availability: [] }).success).toBe(false);
+  });
+
+  const base = { firstName: "Giulia", neighborhood: "west-village", sports: [{ sport: "tennis", level: "Advanced" }], availability: ["5:MORNING"] };
+
+  it("treats blank age preferences as no preference and defaults play styles", () => {
+    const ok = profileSchema.parse({ ...base, partnerAgeMin: "", partnerAgeMax: "" });
+    expect(ok.partnerAgeMin).toBeNull();
+    expect(ok.partnerAgeMax).toBeNull();
+    expect(ok.showAge).toBe(true);
+    expect(ok.playStyles).toEqual(["one_on_one", "small_group"]);
+  });
+
+  it("validates the preferred age range", () => {
+    expect(profileSchema.parse({ ...base, partnerAgeMin: "28", partnerAgeMax: "45" }).partnerAgeMin).toBe(28);
+    expect(profileSchema.safeParse({ ...base, partnerAgeMin: 17 }).success).toBe(false);
+    const inverted = profileSchema.safeParse({ ...base, partnerAgeMin: 50, partnerAgeMax: 30 });
+    expect(inverted.success).toBe(false);
+    expect(inverted.error?.issues[0]?.path).toEqual(["partnerAgeMax"]);
+  });
+
+  it("only accepts known play styles and at least one", () => {
+    expect(profileSchema.safeParse({ ...base, playStyles: [] }).success).toBe(false);
+    expect(profileSchema.safeParse({ ...base, playStyles: ["speed_dating"] }).success).toBe(false);
+    expect(profileSchema.parse({ ...base, playStyles: ["large_group"] }).playStyles).toEqual(["large_group"]);
+  });
+});
+
+describe("groupInvitationSchema", () => {
+  const future = new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 10);
+  const d = { sportId: "7c9e6679-7425-40de-944b-e07fc1f90ae7", proposedDate: future, proposedTime: "08:00", locationNote: "Central Park" };
+  const id = (n: number) => `00000000-0000-4000-8000-00000000000${n}`;
+  it("needs two to nine distinct invitees", () => {
+    expect(groupInvitationSchema.safeParse({ ...d, recipientIds: [id(1)] }).success).toBe(false);
+    expect(groupInvitationSchema.safeParse({ ...d, recipientIds: [id(1), id(1)] }).success).toBe(false);
+    expect(groupInvitationSchema.safeParse({ ...d, recipientIds: [id(1), id(2), id(3)] }).success).toBe(true);
   });
 });
 

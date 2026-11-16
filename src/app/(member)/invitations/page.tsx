@@ -14,7 +14,7 @@ import type { Tables } from "@/types/database";
 
 export const metadata: Metadata = { title: "Invitations", robots: { index: false } };
 
-type Inv = Pick<Tables<"invitations">, "id" | "sender_id" | "recipient_id" | "sport_id" | "proposed_date" | "proposed_time" | "location_note" | "message" | "status" | "created_at">;
+type Inv = Pick<Tables<"invitations">, "id" | "sender_id" | "recipient_id" | "sport_id" | "proposed_date" | "proposed_time" | "location_note" | "message" | "status" | "created_at" | "group_id">;
 
 export default async function InvitationsPage() {
   const viewer = await requireCommunityAccess("/invitations");
@@ -22,7 +22,7 @@ export default async function InvitationsPage() {
   const [{ data }, { data: sports }] = await Promise.all([
     supabase
       .from("invitations")
-      .select("id, sender_id, recipient_id, sport_id, proposed_date, proposed_time, location_note, message, status, created_at")
+      .select("id, sender_id, recipient_id, sport_id, proposed_date, proposed_time, location_note, message, status, created_at, group_id")
       .order("proposed_date", { ascending: true })
       .order("proposed_time", { ascending: true })
       .limit(200),
@@ -58,6 +58,7 @@ export default async function InvitationsPage() {
               {incoming ? "From" : "With"}{" "}
               {m ? <Link className="underline-offset-4 hover:underline" href={`/members/${m.userId}`}>{name}</Link> : name} · {i.location_note}
             </p>
+            {i.group_id ? <p className="mt-2 text-[0.6875rem] uppercase tracking-[0.16em] text-steel">Group invitation</p> : null}
             {i.message ? <p className="mt-2 max-w-xl text-sm italic text-muted-foreground">&ldquo;{i.message}&rdquo;</p> : null}
           </div>
         </div>

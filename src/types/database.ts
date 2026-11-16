@@ -190,6 +190,7 @@ export type Database = {
           responded_at: string | null;
           created_at: string;
           updated_at: string;
+          group_id: string | null;
         };
         Insert: {
           id?: string;
@@ -204,6 +205,7 @@ export type Database = {
           responded_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          group_id?: string | null;
         };
         Update: {
           id?: string;
@@ -218,6 +220,7 @@ export type Database = {
           responded_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          group_id?: string | null;
         };
         Relationships: [];
       };
@@ -239,6 +242,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      member_private: {
+        Row: {
+          user_id: string;
+          date_of_birth: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          date_of_birth: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          date_of_birth?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       member_profiles: {
         Row: {
           user_id: string;
@@ -254,6 +275,10 @@ export type Database = {
           completed_at: string | null;
           created_at: string;
           updated_at: string;
+          show_age: boolean;
+          partner_age_min: number | null;
+          partner_age_max: number | null;
+          play_styles: string[];
         };
         Insert: {
           user_id: string;
@@ -269,6 +294,10 @@ export type Database = {
           completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          show_age?: boolean;
+          partner_age_min?: number | null;
+          partner_age_max?: number | null;
+          play_styles?: string[];
         };
         Update: {
           user_id?: string;
@@ -284,6 +313,10 @@ export type Database = {
           completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
+          show_age?: boolean;
+          partner_age_min?: number | null;
+          partner_age_max?: number | null;
+          play_styles?: string[];
         };
         Relationships: [];
       };
@@ -650,9 +683,82 @@ export type Database = {
         };
         Relationships: [];
       };
+      venue_sports: {
+        Row: {
+          venue_id: string;
+          sport_id: string;
+          note: string | null;
+        };
+        Insert: {
+          venue_id: string;
+          sport_id: string;
+          note?: string | null;
+        };
+        Update: {
+          venue_id?: string;
+          sport_id?: string;
+          note?: string | null;
+        };
+        Relationships: [];
+      };
+      venues: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          neighborhood: string;
+          location: string;
+          description: string | null;
+          access: Database["public"]["Enums"]["venue_access"];
+          access_note: string | null;
+          indoor: boolean;
+          seasonal: boolean;
+          website: string | null;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          neighborhood: string;
+          location: string;
+          description?: string | null;
+          access: Database["public"]["Enums"]["venue_access"];
+          access_note?: string | null;
+          indoor?: boolean;
+          seasonal?: boolean;
+          website?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          name?: string;
+          neighborhood?: string;
+          location?: string;
+          description?: string | null;
+          access?: Database["public"]["Enums"]["venue_access"];
+          access_note?: string | null;
+          indoor?: boolean;
+          seasonal?: boolean;
+          website?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: {
+      age_on: { Args: { dob: string; on_date?: string }; Returns: number };
       are_connected: { Args: { a: string; b: string }; Returns: boolean };
       can_message: { Args: { cid: string; uid?: string }; Returns: boolean };
       can_use_community: { Args: { uid?: string }; Returns: boolean };
@@ -663,6 +769,7 @@ export type Database = {
       is_admin: { Args: { uid?: string }; Returns: boolean };
       is_blocked_between: { Args: { a: string; b: string }; Returns: boolean };
       is_conversation_participant: { Args: { cid: string; uid?: string }; Returns: boolean };
+      member_age_info: { Args: { p_ids: string[] }; Returns: { user_id: string; age: number | null; i_accept: boolean; they_accept: boolean }[] };
       my_unread_counts: { Args: Record<PropertyKey, never>; Returns: { conversation_id: string; unread: number }[] };
       rate_limit_hit: { Args: { p_key: string; p_limit: number; p_window_seconds: number }; Returns: boolean };
     };
@@ -678,6 +785,7 @@ export type Database = {
       subscription_status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "paused";
       time_block: "EARLY_MORNING" | "MORNING" | "MIDDAY" | "AFTERNOON" | "EVENING";
       user_role: "ADMIN" | "MEMBER" | "APPLICANT";
+      venue_access: "FREE_PUBLIC" | "PERMIT_OR_RESERVATION" | "PAID_OR_MEMBERSHIP";
     };
     CompositeTypes: { [_ in never]: never };
   };

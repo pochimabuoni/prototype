@@ -17,6 +17,7 @@ export function SiteFooter() {
           title="The club"
           links={[
             { href: "/philosophy", label: "Our philosophy" },
+            { href: "/venues", label: "Venues" },
             { href: "/how-it-works", label: "How it works" },
             { href: "/membership", label: "Membership" },
           ]}

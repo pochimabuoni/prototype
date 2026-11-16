@@ -1,10 +1,11 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { assertCommunityAccess, AuthorizationError } from "@/lib/auth/viewer";
-import { invitationSchema } from "@/lib/validation/community";
+import { groupInvitationSchema, invitationSchema } from "@/lib/validation/community";
 import { uuidSchema } from "@/lib/validation/common";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email/send";
@@ -74,6 +75,70 @@ export async function createInvitation(input: unknown): Promise<ActionResult<{ i
   }
   revalidatePath("/invitations");
   return { ok: true, data: { id: data.id }, message: "Invitation sent." };
+}
+
+/**
+ * Invite several members at once (doubles, a foursome, a pickup game).
+ * Creates one invitation per member, linked by a shared group id. The insert
+ * runs as the sender, so RLS checks every recipient; if any one isn't
+ * available, nothing is sent.
+ */
+export async function createGroupInvitation(input: unknown): Promise<ActionResult<{ groupId: string }>> {
+  const g = await guard();
+  if ("error" in g) return g.error!;
+  const parsed = groupInvitationSchema.safeParse(input);
+  if (!parsed.success) return fail("Please review the invitation.", zodFieldErrors(parsed.error.issues));
+  const d = parsed.data;
+  if (d.recipientIds.includes(g.viewer.id)) return fail("You can't invite yourself.");
+  if (!(await rateLimit("invitation", g.viewer.id))) return fail("You've sent many invitations today. Please try again tomorrow.");
+
+  const groupId = randomUUID();
+  const supabase = await createClient();
+  const { error } = await supabase.from("invitations").insert(
+    d.recipientIds.map((recipientId) => ({
+      sender_id: g.viewer.id,
+      recipient_id: recipientId,
+      sport_id: d.sportId,
+      proposed_date: d.proposedDate,
+      proposed_time: d.proposedTime,
+      location_note: d.locationNote,
+      message: d.message ?? null,
+      group_id: groupId,
+    })),
+  );
+  if (error) {
+    if (error.code === "42501") return fail("One of these members isn't available for invitations. Please choose another group.");
+    console.error("[invitations] group insert", error.message);
+    return fail(GENERIC_ERROR);
+  }
+
+  const admin = createAdminClient();
+  const [{ data: users }, { data: profiles }, { data: me }, { data: sport }] = await Promise.all([
+    admin.from("users").select("id, email").in("id", d.recipientIds),
+    admin.from("member_profiles").select("user_id, first_name").in("user_id", d.recipientIds),
+    admin.from("member_profiles").select("first_name, last_name, show_last_name").eq("user_id", g.viewer.id).single(),
+    admin.from("sports").select("name").eq("id", d.sportId).single(),
+  ]);
+  if (me && sport) {
+    for (const u of users ?? []) {
+      const p = profiles?.find((x) => x.user_id === u.id);
+      if (!p) continue;
+      await sendEmail(
+        u.email,
+        emailTemplates.invitationReceived({
+          recipientFirstName: p.first_name,
+          senderDisplayName: displayName(me),
+          sport: sport.name,
+          when: formatInvitationWhen(d.proposedDate, d.proposedTime),
+          where: d.locationNote,
+          reviewUrl: siteUrl("/invitations"),
+          othersInvited: d.recipientIds.length - 1,
+        }),
+      );
+    }
+  }
+  revalidatePath("/invitations");
+  return { ok: true, data: { groupId }, message: `Invitations sent to ${d.recipientIds.length} members.` };
 }
 
 type Transition = "ACCEPTED" | "DECLINED" | "CANCELLED" | "COMPLETED";

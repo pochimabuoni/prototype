@@ -19,6 +19,7 @@ import { AvailabilityGrid } from "@/components/forms/availability-grid";
 import { SportPicker, type SportOption } from "@/components/forms/sport-picker";
 import { NeighborhoodSelect } from "@/components/forms/neighborhood-select";
 import { IMAGE_TYPES, MAX_IMAGE_BYTES } from "@/lib/validation/common";
+import { AGE_MAX, AGE_MIN, PLAY_STYLES, type PlayStyle } from "@/lib/domain/play-styles";
 
 export function ProfileForm({
   sports,
@@ -179,6 +180,72 @@ export function ProfileForm({
           render={({ field }) => <AvailabilityGrid value={field.value} onChange={field.onChange} invalid={!!errors.availability} />}
         />
         {errors.availability?.message ? <p role="alert" className="mt-3 text-xs text-destructive">{errors.availability.message}</p> : null}
+      </Section>
+
+      <Section title="Matchmaking preferences">
+        <div className="flex flex-col gap-10">
+          <fieldset className="flex flex-col gap-4">
+            <legend className="mb-1 text-sm font-medium">How do you like to play?</legend>
+            <Controller
+              control={control}
+              name="playStyles"
+              render={({ field }) => {
+                const value = (field.value ?? []) as PlayStyle[];
+                return (
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {PLAY_STYLES.map((p) => {
+                      const checked = value.includes(p.value);
+                      return (
+                        <label
+                          key={p.value}
+                          className={`flex cursor-pointer flex-col gap-2 border p-4 text-sm transition-colors ${checked ? "border-ink bg-ivory" : "border-border hover:border-stone"}`}
+                        >
+                          <span className="flex items-center gap-3 font-medium">
+                            <Checkbox
+                              checked={checked}
+                              onCheckedChange={(c) => field.onChange(c === true ? [...value, p.value] : value.filter((v) => v !== p.value))}
+                            />
+                            {p.label}
+                          </span>
+                          <span className="text-xs leading-relaxed text-muted-foreground">{p.description}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                );
+              }}
+            />
+            {errors.playStyles?.message ? <p role="alert" className="text-xs text-destructive">{errors.playStyles.message}</p> : null}
+          </fieldset>
+
+          <fieldset className="flex flex-col gap-4">
+            <legend className="mb-1 text-sm font-medium">Preferred age of the people you play with</legend>
+            <div className="grid max-w-md grid-cols-2 gap-6">
+              <FormField id="partnerAgeMin" label="From" error={errors.partnerAgeMin?.message}>
+                <Input id="partnerAgeMin" type="number" inputMode="numeric" min={AGE_MIN} max={AGE_MAX} placeholder="Any" {...register("partnerAgeMin")} />
+              </FormField>
+              <FormField id="partnerAgeMax" label="To" error={errors.partnerAgeMax?.message}>
+                <Input id="partnerAgeMax" type="number" inputMode="numeric" min={AGE_MIN} max={AGE_MAX} placeholder="Any" {...register("partnerAgeMax")} />
+              </FormField>
+            </div>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Optional. Leave blank for no preference. Suggestions respect both your range and the other member&apos;s, so you only meet people who would also like to meet you.
+            </p>
+            <Controller
+              control={control}
+              name="showAge"
+              render={({ field }) => (
+                <label className="flex items-center gap-3 text-sm">
+                  <Checkbox checked={!!field.value} onCheckedChange={(c) => field.onChange(c === true)} />
+                  Show my age on my profile
+                </label>
+              )}
+            />
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Your age comes from your application and your date of birth is never shown. Even if you hide your age, it is still used, privately, to respect other members&apos; preferences.
+            </p>
+          </fieldset>
+        </div>
       </Section>
 
       <Section title="Visibility">

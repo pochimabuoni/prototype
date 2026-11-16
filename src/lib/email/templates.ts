@@ -132,17 +132,30 @@ export const emailTemplates = {
       cta: { label: "Review request", url: p.reviewUrl },
     }),
 
-  invitationReceived: (p: { recipientFirstName: string; senderDisplayName: string; sport: string; when: string; where: string; reviewUrl: string }) =>
-    build(`${p.senderDisplayName} invited you to play ${p.sport}`, {
+  invitationReceived: (p: {
+    recipientFirstName: string;
+    senderDisplayName: string;
+    sport: string;
+    when: string;
+    where: string;
+    reviewUrl: string;
+    /** For group invitations: how many other members were invited. */
+    othersInvited?: number;
+  }) => {
+    const group = p.othersInvited && p.othersInvited > 0 ? ` with ${p.othersInvited} other ${p.othersInvited === 1 ? "member" : "members"}` : "";
+    return build(`${p.senderDisplayName} invited you to play ${p.sport}${group ? " in a group" : ""}`, {
       preheader: `${p.sport} · ${p.when}`,
-      eyebrow: "Invitation to play",
+      eyebrow: group ? "Group invitation" : "Invitation to play",
       heading: `${p.sport}, ${p.when}.`,
       paragraphs: [
-        `Hello ${p.recipientFirstName}, ${p.senderDisplayName} has invited you to play ${p.sport.toLowerCase()} on ${p.when}, suggesting ${p.where}.`,
-        "Pochi Ma Buoni doesn't book venues — if you accept, the two of you arrange any reservation directly.",
+        `Hello ${p.recipientFirstName}, ${p.senderDisplayName} has invited you to play ${p.sport.toLowerCase()}${group} on ${p.when}, suggesting ${p.where}.`,
+        group
+          ? "Pochi Ma Buoni doesn't book venues. If the group comes together, you arrange any reservation directly."
+          : "Pochi Ma Buoni doesn't book venues — if you accept, the two of you arrange any reservation directly.",
       ],
       cta: { label: "Respond to invitation", url: p.reviewUrl },
-    }),
+    });
+  },
 
   paymentFailed: (p: { firstName: string; billingUrl: string }) =>
     build("We couldn't process your membership payment", {

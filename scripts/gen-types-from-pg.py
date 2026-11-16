@@ -44,7 +44,8 @@ from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='publ
 def argts(s):
     s=s.strip()
     if s.startswith('timestamp with time zone') : return 'string'
-    return ts({'uuid':'uuid','text':'text','integer':'int4','boolean':'bool','bigint':'int8'}.get(s.split()[0],s.split()[0]))
+    if s.endswith('[]'): return argts(s[:-2]) + '[]'
+    return ts({'uuid':'uuid','text':'text','integer':'int4','boolean':'bool','bigint':'int8','date':'date','smallint':'int2'}.get(s.split()[0],s.split()[0]))
 for f in fns:
     if f['name'] in ('set_updated_at',): continue
     args=[a.strip() for a in f['args'].split(',') if a.strip()]

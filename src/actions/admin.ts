@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient, type AdminSupabase } from "@/lib/supabase/admin";
 import { assertAdmin, AuthorizationError, type Viewer } from "@/lib/auth/viewer";
 import { logAdminAction } from "@/lib/audit";
-import { sportSchema, referralSchema, reportUpdateSchema, suspendSchema } from "@/lib/validation/admin";
+import { sportSchema, venueSchema, referralSchema, reportUpdateSchema, suspendSchema } from "@/lib/validation/admin";
 import { uuidSchema } from "@/lib/validation/common";
 import { weightsSchema } from "@/lib/matching/weights";
 import { getStripe } from "@/lib/billing/stripe";
@@ -119,6 +119,88 @@ export async function setSportActive(sportId: string, active: boolean) {
     if (error) return fail(GENERIC_ERROR);
     await logAdminAction(db, { actorId: actor.id, action: active ? "sport.activate" : "sport.deactivate", targetType: "sport", targetId: sportId });
     revalidatePath("/admin/sports");
+    return { ok: true };
+  });
+}
+
+export async function saveVenue(_prev: ActionResult | null, formData: FormData) {
+  return withAdmin(async ({ actor, db }) => {
+    const p = venueSchema.safeParse({
+      id: formData.get("id") || undefined,
+      name: formData.get("name"),
+      slug: formData.get("slug"),
+      neighborhood: formData.get("neighborhood"),
+      location: formData.get("location"),
+      description: formData.get("description") ?? undefined,
+      access: formData.get("access"),
+      accessNote: formData.get("accessNote") ?? undefined,
+      indoor: formData.get("indoor") === "on",
+      seasonal: formData.get("seasonal") === "on",
+      website: formData.get("website") ?? undefined,
+      sortOrder: formData.get("sortOrder") || 100,
+      sportIds: formData.getAll("sportIds").map(String),
+    });
+    if (!p.success) return fail("Please review the venue.", zodFieldErrors(p.error.issues));
+    const d = p.data;
+    const row = {
+      name: d.name,
+      slug: d.slug,
+      neighborhood: d.neighborhood,
+      location: d.location,
+      description: d.description ?? null,
+      access: d.access,
+      access_note: d.accessNote ?? null,
+      indoor: d.indoor,
+      seasonal: d.seasonal,
+      website: d.website ?? null,
+      sort_order: d.sortOrder,
+    };
+
+    let venueId = d.id;
+    if (venueId) {
+      const { error } = await db.from("venues").update(row).eq("id", venueId);
+      if (error) return fail(error.code === "23505" ? "That slug is already used." : GENERIC_ERROR);
+    } else {
+      const { data, error } = await db.from("venues").insert(row).select("id").single();
+      if (error || !data) return fail(error?.code === "23505" ? "That slug is already used." : GENERIC_ERROR);
+      venueId = data.id;
+    }
+
+    // Sync sports, keeping any notes on sports that stay linked.
+    const { data: existing } = await db.from("venue_sports").select("sport_id, note").eq("venue_id", venueId);
+    const keep = new Set(d.sportIds);
+    const removed = (existing ?? []).filter((e) => !keep.has(e.sport_id)).map((e) => e.sport_id);
+    const added = d.sportIds.filter((id) => !(existing ?? []).some((e) => e.sport_id === id));
+    if (removed.length) {
+      const { error } = await db.from("venue_sports").delete().eq("venue_id", venueId).in("sport_id", removed);
+      if (error) return fail(GENERIC_ERROR);
+    }
+    if (added.length) {
+      const { error } = await db.from("venue_sports").insert(added.map((sport_id) => ({ venue_id: venueId!, sport_id })));
+      if (error) return fail(error.code === "23503" ? "One of the sports no longer exists." : GENERIC_ERROR);
+    }
+
+    await logAdminAction(db, {
+      actorId: actor.id,
+      action: d.id ? "venue.update" : "venue.create",
+      targetType: "venue",
+      targetId: venueId,
+      metadata: { ...row, sportIds: d.sportIds },
+    });
+    revalidatePath("/admin/venues");
+    revalidatePath("/venues", "layout");
+    return { ok: true, message: "Venue saved." };
+  });
+}
+
+export async function setVenueActive(venueId: string, active: boolean) {
+  return withAdmin(async ({ actor, db }) => {
+    if (!uuidSchema.safeParse(venueId).success) return fail("Invalid request.");
+    const { error } = await db.from("venues").update({ is_active: active }).eq("id", venueId);
+    if (error) return fail(GENERIC_ERROR);
+    await logAdminAction(db, { actorId: actor.id, action: active ? "venue.activate" : "venue.deactivate", targetType: "venue", targetId: venueId });
+    revalidatePath("/admin/venues");
+    revalidatePath("/venues", "layout");
     return { ok: true };
   });
 }
