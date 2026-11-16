@@ -43,7 +43,7 @@ export default async function MemberHome() {
       <section className="border-b border-border pb-10">
         <p className="eyebrow">{new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "America/New_York" }).format(new Date())}</p>
         <h1 className="display mt-4 text-5xl sm:text-6xl">
-          {greeting()}, <em className="text-gold">{viewer.profile?.first_name ?? "member"}.</em>
+          {greeting()}, <em className="text-steel">{viewer.profile?.first_name ?? "member"}.</em>
         </h1>
         <div className="mt-8 grid gap-px border border-border bg-border sm:grid-cols-3">
           <Stat href="/connections" label="Connection requests" value={incomingRequests ?? 0} />

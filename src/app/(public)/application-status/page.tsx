@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/application-status" },
 };
 
-const COPY: Partial<Record<MemberStage, { badge: string; title: string; body: string; variant: "outline" | "gold" | "success" | "muted" }>> = {
+const COPY: Partial<Record<MemberStage, { badge: string; title: string; body: string; variant: "outline" | "steel" | "success" | "muted" }>> = {
   NO_APPLICATION: {
     badge: "No application",
     title: "We don't have an application for this email yet.",
@@ -29,7 +29,7 @@ const COPY: Partial<Record<MemberStage, { badge: string; title: string; body: st
     badge: "Waitlisted",
     title: "You're on our waitlist.",
     body: "We admit members in small groups to keep the community balanced. Your application remains on file and we'll be in touch as places open.",
-    variant: "gold",
+    variant: "steel",
   },
   APPLICATION_REJECTED: {
     badge: "Not admitted",

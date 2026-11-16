@@ -30,7 +30,7 @@ export default function HowItWorksPage() {
         <ol className="grid gap-px border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
           {STEPS.map((s, i) => (
             <li key={s.title} className="flex flex-col gap-4 bg-paper p-8 sm:p-10">
-              <span className="font-serif text-5xl text-gold">{i + 1}</span>
+              <span className="font-serif text-5xl text-steel">{i + 1}</span>
               <h2 className="font-serif text-3xl">{s.title}</h2>
               <p className="leading-relaxed text-muted-foreground">{s.body}</p>
             </li>

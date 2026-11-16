@@ -12,7 +12,7 @@ export const PUBLIC_NAV = [
 
 export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
   return (
-    <header className={inverse ? "absolute inset-x-0 top-0 z-40 text-paper" : "sticky top-0 z-40 border-b border-border bg-paper/95 backdrop-blur"}>
+    <header className={inverse ? "absolute inset-x-0 top-0 z-40 text-paper" : "sticky top-0 z-40 border-b border-border bg-paper"}>
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
         <Wordmark inverse={inverse} />
         <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">

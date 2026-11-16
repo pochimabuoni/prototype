@@ -23,26 +23,26 @@ interface LayoutOptions {
 
 function layout(o: LayoutOptions): { html: string; text: string } {
   const p = o.paragraphs
-    .map((t) => `<p style="margin:0 0 16px;font:15px/1.65 Georgia,'Times New Roman',serif;color:#2b2a28;">${esc(t)}</p>`)
+    .map((t) => `<p style="margin:0 0 16px;font:15px/1.65 Georgia,'Times New Roman',serif;color:#1e3354;">${esc(t)}</p>`)
     .join("");
   const cta = o.cta
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 8px;"><tr><td style="background:#141413;">
-         <a href="${esc(o.cta.url)}" style="display:inline-block;padding:14px 28px;font:600 12px/1 Helvetica,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#fbf9f4;text-decoration:none;">${esc(o.cta.label)}</a>
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 8px;"><tr><td style="background:#0d1f3c;">
+         <a href="${esc(o.cta.url)}" style="display:inline-block;padding:14px 28px;font:600 12px/1 Helvetica,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">${esc(o.cta.label)}</a>
        </td></tr></table>`
     : "";
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(o.heading)}</title></head>
-<body style="margin:0;background:#f6f2ea;">
+<body style="margin:0;background:#f4f7fb;">
 <span style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(o.preheader)}</span>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f2ea;padding:40px 16px;"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fbf9f4;border:1px solid #e2dbcd;">
-<tr><td style="padding:32px 40px;border-bottom:1px solid #e2dbcd;font:20px/1 Georgia,serif;letter-spacing:5px;color:#141413;">POCHI <span style="font-style:italic;letter-spacing:0;font-size:14px;color:#9c8152;">ma</span> BUONI</td></tr>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f7fb;padding:40px 16px;"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #dde4ee;">
+<tr><td style="padding:32px 40px;border-bottom:1px solid #dde4ee;font:20px/1 Georgia,serif;letter-spacing:5px;color:#0d1f3c;">POCHI <span style="font-style:italic;letter-spacing:0;font-size:14px;color:#5a7db3;">ma</span> BUONI</td></tr>
 <tr><td style="padding:40px;">
-<p style="margin:0 0 18px;font:11px/1 Helvetica,Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#77736b;">${esc(o.eyebrow)}</p>
-<h1 style="margin:0 0 24px;font:400 30px/1.15 Georgia,'Times New Roman',serif;color:#141413;">${esc(o.heading)}</h1>
+<p style="margin:0 0 18px;font:11px/1 Helvetica,Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#627089;">${esc(o.eyebrow)}</p>
+<h1 style="margin:0 0 24px;font:400 30px/1.15 Georgia,'Times New Roman',serif;color:#0d1f3c;">${esc(o.heading)}</h1>
 ${p}${cta}
-${o.footnote ? `<p style="margin:28px 0 0;font:12px/1.6 Helvetica,Arial,sans-serif;color:#77736b;">${esc(o.footnote)}</p>` : ""}
+${o.footnote ? `<p style="margin:28px 0 0;font:12px/1.6 Helvetica,Arial,sans-serif;color:#627089;">${esc(o.footnote)}</p>` : ""}
 </td></tr>
-<tr><td style="padding:24px 40px;border-top:1px solid #e2dbcd;font:11px/1.6 Helvetica,Arial,sans-serif;color:#77736b;">Pochi Ma Buoni · New York City<br>Few but good. This is a transactional message about your membership.</td></tr>
+<tr><td style="padding:24px 40px;border-top:1px solid #dde4ee;font:11px/1.6 Helvetica,Arial,sans-serif;color:#627089;">Pochi Ma Buoni · New York City<br>Few but good. This is a transactional message about your membership.</td></tr>
 </table></td></tr></table></body></html>`;
   const text = [
     "POCHI MA BUONI",

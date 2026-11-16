@@ -54,7 +54,7 @@ export default async function AdminMembers({ searchParams }: PageProps<"/admin/m
                 </td>
                 <td>{p ? neighborhoodName(p.neighborhood) : "—"}</td>
                 <td>
-                  {s ? <Badge variant={s.status === "active" ? "success" : s.status === "past_due" ? "gold" : "muted"}>{s.status}</Badge> : <span className="text-xs text-muted-foreground">none</span>}
+                  {s ? <Badge variant={s.status === "active" ? "success" : s.status === "past_due" ? "steel" : "muted"}>{s.status}</Badge> : <span className="text-xs text-muted-foreground">none</span>}
                   {s?.cancel_at_period_end ? <div className="mt-1 text-xs text-muted-foreground">cancels {s.current_period_end ? new Date(s.current_period_end).toLocaleDateString() : ""}</div> : null}
                 </td>
                 <td className="text-xs">{u.last_active_at ? new Date(u.last_active_at).toLocaleDateString("en-US", { dateStyle: "medium" }) : "—"}</td>

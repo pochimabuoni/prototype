@@ -14,7 +14,7 @@ export function LegalDocument({
       <p className="eyebrow">Legal · Draft</p>
       <h1 className="display mt-6 text-5xl sm:text-6xl">{title}</h1>
       <p className="mt-4 text-sm text-muted-foreground">Draft prepared {updated}. Not yet in effect.</p>
-      <Alert variant="gold" className="mt-8">
+      <Alert variant="steel" className="mt-8">
         <strong className="font-medium">Draft for legal review.</strong> This document is a working draft prepared for review by
         qualified counsel. It is not a final, approved legal document and should not be relied upon as such. Placeholder
         wording is marked in [square brackets].

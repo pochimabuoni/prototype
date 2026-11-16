@@ -41,7 +41,7 @@ export default function HomePage() {
             <p className="eyebrow !text-paper/50 animate-fade-in">Private members · New York City</p>
             <h1 className="display mt-8 text-[2.5rem] tracking-[0.04em] sm:text-7xl sm:tracking-[0.06em] lg:text-[5.5rem] animate-fade-in">
               POCHI
-              <span className="mx-2 align-middle font-serif sm:mx-3 text-[0.45em] italic tracking-normal text-gold">ma</span>
+              <span className="mx-2 align-middle font-serif sm:mx-3 text-[0.45em] italic tracking-normal text-steel">ma</span>
               BUONI
             </h1>
             <p className="mt-8 max-w-xl font-serif text-2xl italic leading-snug text-paper/90 sm:text-3xl">
@@ -73,7 +73,7 @@ export default function HomePage() {
           <div>
             <p className="eyebrow">The idea</p>
             <h2 className="display mt-6 text-4xl sm:text-5xl">
-              Few, <em className="text-gold">but good.</em>
+              Few, <em className="text-steel">but good.</em>
             </h2>
           </div>
           <div className="space-y-6 text-lg leading-relaxed text-graphite/85">
@@ -108,7 +108,7 @@ export default function HomePage() {
           <div className="mt-16 grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
             {MATCH_FACTORS.map((f) => (
               <div key={f.title} className="bg-ivory p-8">
-                <p className="font-serif text-5xl text-gold">{f.n}</p>
+                <p className="font-serif text-5xl text-steel">{f.n}</p>
                 <p className="mt-6 text-sm font-medium uppercase tracking-[0.16em]">{f.title}</p>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
               </div>
@@ -196,7 +196,7 @@ export default function HomePage() {
                 ["Activate", "Approved members activate their membership and complete a short profile before meeting the community."],
               ].map(([t, b], i) => (
                 <li key={t} className="grid grid-cols-[3rem_1fr] gap-4">
-                  <span className="font-serif text-3xl text-gold">{i + 1}</span>
+                  <span className="font-serif text-3xl text-steel">{i + 1}</span>
                   <div>
                     <p className="text-sm font-medium uppercase tracking-[0.16em]">{t}</p>
                     <p className="mt-2 text-muted-foreground">{b}</p>
@@ -233,7 +233,7 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-4xl flex-col items-center px-5 py-24 text-center sm:px-8 md:py-32">
           <p className="eyebrow">Applications are open</p>
           <h2 className="display mt-6 text-5xl sm:text-6xl">
-            Play well. <em className="text-gold">Belong well.</em>
+            Play well. <em className="text-steel">Belong well.</em>
           </h2>
           <p className="mt-6 max-w-xl text-lg text-graphite/80">
             We are admitting a limited founding membership in Manhattan. If this sounds like your kind of room, we would like to

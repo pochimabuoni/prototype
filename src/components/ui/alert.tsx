@@ -6,7 +6,7 @@ const alertVariants = cva("border-l-2 px-4 py-3 text-sm", {
   variants: {
     variant: {
       default: "border-ink bg-ivory text-ink",
-      gold: "border-gold bg-ivory text-ink",
+      steel: "border-steel bg-ivory text-ink",
       destructive: "border-destructive bg-destructive/5 text-destructive",
       success: "border-success bg-success/5 text-success",
     },

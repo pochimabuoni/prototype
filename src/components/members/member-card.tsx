@@ -45,7 +45,7 @@ export function MemberCard({ member, connection }: { member: MemberMatch; connec
           <ul className="space-y-1.5 text-sm text-graphite">
             {m.reasons.map((r) => (
               <li key={r} className="flex gap-2">
-                <span aria-hidden className="text-gold">—</span>
+                <span aria-hidden className="text-steel">—</span>
                 {r}
               </li>
             ))}

@@ -40,7 +40,7 @@ export default function PhilosophyPage() {
         eyebrow="Our philosophy"
         title={
           <>
-            Pochi ma buoni. <em className="text-gold">Few, but good.</em>
+            Pochi ma buoni. <em className="text-steel">Few, but good.</em>
           </>
         }
         lede={
@@ -55,7 +55,7 @@ export default function PhilosophyPage() {
         <ol className="divide-y divide-border border-y border-border">
           {PRINCIPLES.map((p, i) => (
             <li key={p.title} className="grid gap-4 py-10 sm:grid-cols-[4rem_1fr]">
-              <span className="font-serif text-3xl text-gold">{String(i + 1).padStart(2, "0")}</span>
+              <span className="font-serif text-3xl text-steel">{String(i + 1).padStart(2, "0")}</span>
               <div>
                 <h2 className="font-serif text-3xl">{p.title}</h2>
                 <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">{p.body}</p>

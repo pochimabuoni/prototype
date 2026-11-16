@@ -33,7 +33,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
         <Section id="billing" title="Membership & billing">
           {sp.billing === "unconfigured" ? <Alert variant="destructive" className="mb-4">Billing is not configured in this environment.</Alert> : null}
           <dl className="grid gap-4 text-sm sm:grid-cols-3">
-            <div><dt className="eyebrow">Status</dt><dd className="mt-2"><Badge variant={sub?.status === "active" ? "success" : "gold"}>{sub?.status ?? (viewer.role === "ADMIN" ? "Administrator" : "None")}</Badge></dd></div>
+            <div><dt className="eyebrow">Status</dt><dd className="mt-2"><Badge variant={sub?.status === "active" ? "success" : "steel"}>{sub?.status ?? (viewer.role === "ADMIN" ? "Administrator" : "None")}</Badge></dd></div>
             <div><dt className="eyebrow">Plan</dt><dd className="mt-2">$60 / month</dd></div>
             <div>
               <dt className="eyebrow">{sub?.cancel_at_period_end ? "Ends" : "Renews"}</dt>

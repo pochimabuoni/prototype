@@ -230,7 +230,7 @@ function Fieldset({ number, title, description, children }: { number: string; ti
     <fieldset className="grid gap-8 border-t border-border pt-10 lg:grid-cols-[16rem_1fr]">
       <legend className="contents">
         <span className="flex flex-col gap-2">
-          <span className="font-serif text-lg text-gold">{number}</span>
+          <span className="font-serif text-lg text-steel">{number}</span>
           <span className="font-serif text-3xl">{title}</span>
           {description ? <span className="text-sm text-muted-foreground">{description}</span> : null}
         </span>

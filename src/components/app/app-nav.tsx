@@ -37,7 +37,7 @@ export function AppNav({ isAdmin, unread, pendingInvites }: { isAdmin: boolean; 
           >
             {item.label}
             {item.count ? (
-              <span className="ml-1.5 inline-flex min-w-4 items-center justify-center bg-gold px-1 text-[0.5625rem] leading-4 text-paper">
+              <span className="ml-1.5 inline-flex min-w-4 items-center justify-center bg-steel px-1 text-[0.5625rem] leading-4 text-paper">
                 {item.count > 99 ? "99+" : item.count}
                 <span className="sr-only"> new</span>
               </span>
@@ -48,7 +48,7 @@ export function AppNav({ isAdmin, unread, pendingInvites }: { isAdmin: boolean; 
       <div className="lg:hidden">
         <button type="button" aria-expanded={open} aria-controls="app-mobile-nav" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className="relative z-50 p-2">
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          {!open && unread + pendingInvites > 0 ? <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-gold" /> : null}
+          {!open && unread + pendingInvites > 0 ? <span aria-hidden className="absolute right-1 top-1 size-2 rounded-full bg-steel" /> : null}
         </button>
         {open ? (
           <div id="app-mobile-nav" className="fixed inset-0 z-40 flex flex-col bg-paper px-6 pb-8 pt-20 animate-fade-in">
@@ -56,7 +56,7 @@ export function AppNav({ isAdmin, unread, pendingInvites }: { isAdmin: boolean; 
               {items.map((item) => (
                 <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="flex items-center justify-between border-b border-border py-4 font-serif text-3xl">
                   {item.label}
-                  {item.count ? <span className="font-sans text-sm text-gold">{item.count}</span> : null}
+                  {item.count ? <span className="font-sans text-sm text-steel">{item.count}</span> : null}
                 </Link>
               ))}
             </nav>

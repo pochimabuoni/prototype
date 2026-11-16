@@ -9,7 +9,7 @@ const badgeVariants = cva(
       variant: {
         default: "border-ink bg-ink text-paper",
         outline: "border-sand text-graphite",
-        gold: "border-gold/50 text-gold",
+        steel: "border-steel/50 text-steel",
         success: "border-success/40 text-success",
         destructive: "border-destructive/40 text-destructive",
         muted: "border-transparent bg-linen text-graphite",

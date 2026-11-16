@@ -51,7 +51,7 @@ export default function MembershipPage() {
         <ul className="divide-y divide-border border-y border-border">
           {INCLUDED.map((item) => (
             <li key={item} className="flex gap-4 py-5">
-              <Check aria-hidden className="mt-1 size-4 shrink-0 text-gold" />
+              <Check aria-hidden className="mt-1 size-4 shrink-0 text-steel" />
               <span className="text-lg">{item}</span>
             </li>
           ))}

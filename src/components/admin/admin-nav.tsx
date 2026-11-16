@@ -29,7 +29,7 @@ export function AdminNav() {
             aria-current={active ? "page" : undefined}
             className={cn("whitespace-nowrap px-3 py-2 text-sm transition-colors lg:px-0", active ? "text-ink lg:font-medium" : "text-stone hover:text-ink")}
           >
-            {active ? <span aria-hidden className="mr-2 hidden text-gold lg:inline">—</span> : null}
+            {active ? <span aria-hidden className="mr-2 hidden text-steel lg:inline">—</span> : null}
             {i.label}
           </Link>
         );

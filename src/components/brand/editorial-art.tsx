@@ -28,7 +28,7 @@ export function EditorialArt({
   tone?: "dark" | "light";
   priority?: boolean;
 }) {
-  const stroke = tone === "dark" ? "#efe9dd" : "#141413";
+  const stroke = tone === "dark" ? "#e3eaf5" : "#0d1f3c";
   const bg = tone === "dark" ? "bg-ink" : "bg-linen";
   return (
     <figure className={cn("relative overflow-hidden", bg, className)}>

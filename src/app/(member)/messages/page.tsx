@@ -58,7 +58,7 @@ export default async function MessagesPage() {
                     </p>
                   </div>
                   {count > 0 ? (
-                    <span className="flex min-w-6 items-center justify-center bg-gold px-1.5 py-0.5 text-xs text-paper" aria-label={`${count} unread`}>{count}</span>
+                    <span className="flex min-w-6 items-center justify-center bg-steel px-1.5 py-0.5 text-xs text-paper" aria-label={`${count} unread`}>{count}</span>
                   ) : null}
                 </Link>
               </li>

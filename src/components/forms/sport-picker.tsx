@@ -110,7 +110,7 @@ export function SportPicker({
                             }
                             className={cn(
                               "border px-3 py-1 text-xs transition-colors",
-                              on ? "border-gold bg-gold/10 text-ink" : "border-sand text-graphite hover:border-ink",
+                              on ? "border-steel bg-steel/10 text-ink" : "border-sand text-graphite hover:border-ink",
                             )}
                           >
                             {f}

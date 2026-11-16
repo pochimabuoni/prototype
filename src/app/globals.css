@@ -2,18 +2,19 @@
 
 /*
  * POCHI MA BUONI design tokens
- * Ink, ivory and warm neutrals with a restrained muted-gold accent.
+ * Deep navy on white, with cool blue-grey neutrals and a restrained steel-blue accent.
+ * (Token names kept from the first palette: ink = navy, paper = white.)
  * Tokens follow shadcn/ui naming so generated components drop in cleanly.
  */
 :root {
-  --ivory: #f6f2ea;
-  --paper: #fbf9f4;
-  --ink: #141413;
-  --graphite: #2b2a28;
-  --stone: #77736b;
-  --sand: #d9d2c4;
-  --linen: #ece6da;
-  --gold: #9c8152;
+  --ivory: #f4f7fb;
+  --paper: #ffffff;
+  --ink: #0d1f3c;
+  --graphite: #1e3354;
+  --stone: #627089;
+  --sand: #cdd6e3;
+  --linen: #eaeff6;
+  --steel: #5a7db3;
 
   --background: var(--paper);
   --foreground: var(--ink);
@@ -26,15 +27,15 @@
   --secondary: var(--linen);
   --secondary-foreground: var(--ink);
   --muted: var(--linen);
-  --muted-foreground: #66625b;
+  --muted-foreground: #5a6680;
   --accent: var(--ivory);
   --accent-foreground: var(--ink);
   --destructive: #8c2f24;
   --destructive-foreground: #ffffff;
   --success: #3f5b3a;
-  --border: #e2dbcd;
-  --input: #d6cebe;
-  --ring: var(--gold);
+  --border: #dde4ee;
+  --input: #c9d3e1;
+  --ring: var(--steel);
   --radius: 0.125rem;
 }
 
@@ -66,7 +67,7 @@
   --color-stone: var(--stone);
   --color-sand: var(--sand);
   --color-linen: var(--linen);
-  --color-gold: var(--gold);
+  --color-steel: var(--steel);
 
   --font-sans: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-display), "Times New Roman", serif;

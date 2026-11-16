@@ -10,7 +10,7 @@ export function Wordmark({ className, href = "/", inverse = false }: { className
       className={cn("group inline-flex items-baseline gap-2 font-serif text-[1.35rem] leading-none tracking-[0.2em]", inverse ? "text-paper" : "text-ink", className)}
     >
       <span>POCHI</span>
-      <span className="text-[0.9rem] italic tracking-normal text-gold">ma</span>
+      <span className="text-[0.9rem] italic tracking-normal text-steel">ma</span>
       <span>BUONI</span>
     </Link>
   );

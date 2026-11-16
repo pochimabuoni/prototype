@@ -53,7 +53,7 @@ export default async function AdminApplications({ searchParams }: PageProps<"/ad
                 <td>{neighborhoodName(a.neighborhood)}</td>
                 <td className="text-xs">{(Array.isArray(a.sports) ? (a.sports as { sport: string; level: string }[]) : []).map((s) => `${s.sport} (${s.level})`).join(", ")}</td>
                 <td className="whitespace-nowrap text-xs">{new Date(a.created_at).toLocaleDateString("en-US", { dateStyle: "medium" })}</td>
-                <td><Badge variant={statusVariant[a.status]}>{a.status.toLowerCase()}</Badge>{a.referral_code_id ? <Badge variant="gold" className="ml-1">referred</Badge> : null}</td>
+                <td><Badge variant={statusVariant[a.status]}>{a.status.toLowerCase()}</Badge>{a.referral_code_id ? <Badge variant="steel" className="ml-1">referred</Badge> : null}</td>
               </tr>
             ))}
           </tbody>

@@ -32,4 +32,4 @@ export function Table({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const statusVariant = { PENDING: "outline", WAITLISTED: "gold", APPROVED: "success", REJECTED: "muted" } as const;
+export const statusVariant = { PENDING: "outline", WAITLISTED: "steel", APPROVED: "success", REJECTED: "muted" } as const;
