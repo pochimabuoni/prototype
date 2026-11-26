@@ -10,6 +10,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { FormField } from "@/components/ui/form-field";
 import { Alert } from "@/components/ui/alert";
 import { NeighborhoodSelect } from "@/components/forms/neighborhood-select";
+import { VENUE_NEIGHBORHOODS } from "@/lib/domain/neighborhoods";
 import { VENUE_ACCESS, type VenueAccess } from "@/lib/domain/venues";
 
 export interface VenueRow {
@@ -39,7 +40,7 @@ export function VenueForm({ venue, sports }: { venue?: VenueRow; sports: { id: s
       <FormField id={`${p}-name`} label="Name" error={fe.name}><Input id={`${p}-name`} name="name" defaultValue={venue?.name} required /></FormField>
       <FormField id={`${p}-slug`} label="Slug" error={fe.slug}><Input id={`${p}-slug`} name="slug" defaultValue={venue?.slug} required /></FormField>
       <FormField id={`${p}-hood`} label="Neighbourhood" error={fe.neighborhood}>
-        <NeighborhoodSelect id={`${p}-hood`} name="neighborhood" defaultValue={venue?.neighborhood ?? ""} />
+        <NeighborhoodSelect id={`${p}-hood`} name="neighborhood" options={VENUE_NEIGHBORHOODS} placeholder="Select an area…" defaultValue={venue?.neighborhood ?? ""} />
       </FormField>
       <FormField id={`${p}-location`} label="Location" error={fe.location} hint="A street, pier or park entrance. No booking details.">
         <Input id={`${p}-location`} name="location" defaultValue={venue?.location} required />

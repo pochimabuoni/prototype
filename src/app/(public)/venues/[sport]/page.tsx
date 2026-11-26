@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSportVenues, getVenueDirectory } from "@/lib/data/venues";
 import { VENUE_DISCLAIMER } from "@/lib/domain/venues";
+import { BOROUGH_ORDER } from "@/lib/domain/neighborhoods";
 import { VenueCard } from "@/components/venues/venue-card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,8 @@ export default async function SportVenuesPage({ params }: PageProps<"/venues/[sp
   const current = directory.find((d) => d.sport.slug === slug);
   if (!current) notFound();
   const { sport, venues } = current;
+  // Manhattan first, then the other boroughs, keeping the curated order within each.
+  const groups = BOROUGH_ORDER.map((b) => [b, venues.filter((v) => v.borough === b)] as const).filter(([, l]) => l.length > 0);
 
   return (
     <>
@@ -58,13 +61,27 @@ export default async function SportVenuesPage({ params }: PageProps<"/venues/[sp
             We haven&apos;t listed {sport.name.toLowerCase()} venues yet. Members suggest places when they invite each other to play.
           </p>
         ) : (
-          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {venues.map((v) => (
-              <li key={v.id}>
-                <VenueCard venue={v} />
-              </li>
+          <div className="flex flex-col gap-14">
+            {groups.map(([borough, list]) => (
+              <section key={borough} aria-labelledby={groups.length > 1 ? `borough-${borough}` : undefined}>
+                {groups.length > 1 ? (
+                  <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-3">
+                    <h2 id={`borough-${borough}`} className="font-serif text-3xl">{borough === "Bronx" ? "The Bronx" : borough}</h2>
+                    <p className="text-[0.6875rem] uppercase tracking-[0.16em] text-stone">
+                      {list.length} {list.length === 1 ? "venue" : "venues"}
+                    </p>
+                  </div>
+                ) : null}
+                <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {list.map((v) => (
+                    <li key={v.id}>
+                      <VenueCard venue={v} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ul>
+          </div>
         )}
       </section>
 
