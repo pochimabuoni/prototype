@@ -18,6 +18,7 @@ export function SiteFooter() {
           links={[
             { href: "/philosophy", label: "Our philosophy" },
             { href: "/venues", label: "Venues" },
+            { href: "/city", label: "The city" },
             { href: "/how-it-works", label: "How it works" },
             { href: "/membership", label: "Membership" },
           ]}

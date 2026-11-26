@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { neighborhoodSchema, optionalText, uuidSchema } from "./common";
+import { optionalText, uuidSchema, venueNeighborhoodSchema } from "./common";
 
 const vocabulary = z
   .string()
@@ -38,7 +38,7 @@ export const venueSchema = z.object({
   id: uuidSchema.optional(),
   name: z.string().trim().min(2, "Name is required.").max(120),
   slug: z.string().trim().toLowerCase().regex(/^[a-z0-9-]{2,80}$/, "Use lowercase letters, numbers and hyphens."),
-  neighborhood: neighborhoodSchema,
+  neighborhood: venueNeighborhoodSchema,
   location: z.string().trim().min(2, "Describe where it is, e.g. a street or park entrance.").max(200),
   description: optionalText(600),
   access: z.enum(["FREE_PUBLIC", "PERMIT_OR_RESERVATION", "PAID_OR_MEMBERSHIP"], { error: "Choose how members get access." }),

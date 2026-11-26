@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NEIGHBORHOOD_SLUGS } from "@/lib/domain/neighborhoods";
+import { NEIGHBORHOOD_SLUGS, VENUE_NEIGHBORHOOD_SLUGS } from "@/lib/domain/neighborhoods";
 import { SLOT_KEY_REGEX } from "@/lib/domain/availability";
 import { MIN_AGE } from "@/lib/domain/constants";
 
@@ -13,6 +13,9 @@ export const optionalText = (max: number) =>
     .transform((v) => (v ? v : undefined));
 
 export const neighborhoodSchema = z.enum(NEIGHBORHOOD_SLUGS, { error: "Please choose a neighbourhood." });
+
+/** Venues can also sit in areas members do not choose from (see VENUE_ONLY_NEIGHBORHOODS). */
+export const venueNeighborhoodSchema = z.enum(VENUE_NEIGHBORHOOD_SLUGS, { error: "Please choose an area." });
 
 export const slotKeySchema = z.string().regex(SLOT_KEY_REGEX, "Invalid availability slot.");
 

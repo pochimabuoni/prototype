@@ -1,12 +1,12 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database";
-import { neighborhoodName } from "@/lib/domain/neighborhoods";
+import { getNeighborhood, neighborhoodName, type Borough } from "@/lib/domain/neighborhoods";
 
 export type Venue = Pick<
   Tables<"venues">,
   "id" | "slug" | "name" | "neighborhood" | "location" | "description" | "access" | "access_note" | "indoor" | "seasonal" | "website"
-> & { neighborhoodName: string; note: string | null };
+> & { neighborhoodName: string; borough: Borough; note: string | null };
 
 export interface SportVenues {
   sport: { id: string; slug: string; name: string };
@@ -48,6 +48,7 @@ function toVenue(row: Tables<"venues">, note: string | null): Venue {
     name: row.name,
     neighborhood: row.neighborhood,
     neighborhoodName: neighborhoodName(row.neighborhood),
+    borough: getNeighborhood(row.neighborhood)?.borough ?? "Manhattan",
     location: row.location,
     description: row.description,
     access: row.access,

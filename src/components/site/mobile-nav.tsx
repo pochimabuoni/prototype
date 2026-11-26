@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 export function MobileNav({ items, inverse = false }: { items: readonly { href: string; label: string }[]; inverse?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="lg:hidden">
+    <div className="xl:hidden">
       <button
         type="button"
         aria-expanded={open}
